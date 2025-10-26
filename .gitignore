@@ -1,0 +1,68 @@
+# Operating System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sql.gz
+*.sqlite
+*.db
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+
+# Backup Files
+*.backup
+*~
+
+# PHP
+vendor/
+composer.phar
+composer.lock
+
+# Node (if using any frontend build tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Compiled/Build Files
+dist/
+build/
+
+# Archives (uncomment if you don't want to track zip files)
+# *.zip
+# *.tar
+# *.tar.gz
+# *.rar

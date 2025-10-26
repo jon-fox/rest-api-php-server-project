@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Management API - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: #1e88e5;
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #1e88e5;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #1e88e5;
+            padding-bottom: 10px;
+        }
+        .endpoint {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .endpoint-header {
+            padding: 15px 20px;
+            background: #fafafa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .endpoint-header:hover {
+            background: #f0f0f0;
+        }
+        .method {
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-right: 15px;
+            font-size: 0.9em;
+            min-width: 70px;
+            text-align: center;
+        }
+        .method.get { background: #61affe; color: white; }
+        .method.post { background: #49cc90; color: white; }
+        .method.put { background: #fca130; color: white; }
+        .method.delete { background: #f93e3e; color: white; }
+        .path {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 1.1em;
+            flex: 1;
+        }
+        .lock-icon {
+            color: #f93e3e;
+            margin-left: 10px;
+        }
+        .endpoint-details {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+        }
+        .detail-row {
+            margin-bottom: 15px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .token-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        .token-info h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .token-example {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .curl-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            position: relative;
+        }
+        .curl-example:hover .copy-btn {
+            opacity: 1;
+        }
+        .try-it {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .try-it input, .try-it textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .try-it textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .try-it button {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .try-it button:hover {
+            background: #1565c0;
+        }
+        .response-box {
+            margin-top: 10px;
+            padding: 10px;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.75em;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .copy-btn:hover {
+            background: #666;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Load cached token on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cachedToken = localStorage.getItem('api_bearer_token');
+            if (cachedToken) {
+                document.getElementById('global-token').value = cachedToken;
+            }
+        });
+
+        // Save token to localStorage when it changes
+        function saveToken() {
+            const tokenInput = document.getElementById('global-token');
+            if (tokenInput.value) {
+                localStorage.setItem('api_bearer_token', tokenInput.value);
+            }
+        }
+
+        // Toggle token visibility
+        function toggleTokenVisibility() {
+            const tokenInput = document.getElementById('global-token');
+            const button = event.target;
+            if (tokenInput.type === 'password') {
+                tokenInput.type = 'text';
+                button.textContent = '🙈 Hide';
+            } else {
+                tokenInput.type = 'password';
+                button.textContent = '👁️ Show';
+            }
+        }
+
+        // Clear token from input and localStorage
+        function clearToken() {
+            const tokenInput = document.getElementById('global-token');
+            tokenInput.value = '';
+            localStorage.removeItem('api_bearer_token');
+            alert('Token cleared from cache');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+        }
+
+        async function tryRequest(endpoint, method, requiresAuth) {
+            const baseEndpoint = endpoint.replace(/\{id\}/g, 'id');
+            const sanitized = baseEndpoint.replace(/[^a-z0-9]/gi, '-') + (method !== 'GET' ? '-' + method.toLowerCase() : '');
+            const resultId = `result-${sanitized}`;
+            const bodyId = `body-${sanitized}`;
+            const paramId = `param-${sanitized}`;
+            
+            const resultBox = document.getElementById(resultId);
+            const bodyInput = document.getElementById(bodyId);
+            const paramInput = document.getElementById(paramId);
+            const globalToken = document.getElementById('global-token');
+            
+            // Save token to localStorage when making a request
+            saveToken();
+            
+            let finalEndpoint = endpoint;
+            if (paramInput && paramInput.value) {
+                finalEndpoint = endpoint.replace(/\{id\}/g, paramInput.value);
+            }
+            
+            resultBox.style.display = 'block';
+            resultBox.textContent = 'Loading...';
+            
+            try {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (requiresAuth) {
+                    if (!globalToken || !globalToken.value) {
+                        resultBox.textContent = 'Error: Please set the bearer token at the top of the page';
+                        return;
+                    }
+                    headers['Authorization'] = `Bearer ${globalToken.value}`;
+                }
+                
+                const options = {
+                    method: method,
+                    headers: headers
+                };
+                
+                if (bodyInput && bodyInput.value && (method === 'POST' || method === 'PUT')) {
+                    options.body = bodyInput.value;
+                }
+                
+                const response = await fetch(`http://localhost:8000${finalEndpoint}`, options);
+                
+                let data;
+                const text = await response.text();
+                
+                if (text) {
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        resultBox.textContent = `Status: ${response.status}\n\nError: Invalid JSON response\n${text}`;
+                        return;
+                    }
+                } else {
+                    resultBox.textContent = `Status: ${response.status}\n\nError: Empty response from server`;
+                    return;
+                }
+                
+                resultBox.textContent = `Status: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultBox.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+    <header>
+        <div class="container">
+            <h1>AI Agent Management API</h1>
+            <p>Complete REST API documentation for managing AI agents, tasks, tools, and logs</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>🔐 Authentication</h2>
+            <p style="margin-bottom: 15px;">Protected endpoints require a bearer token. Generate a token using <code>code/generate_token.sh</code> and set it below:</p>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="global-token" style="font-weight: 600;">Bearer Token:</label>
+                <input type="password" id="global-token" placeholder="Enter your bearer token here" 
+                       style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;">
+                <button onclick="toggleTokenVisibility()" style="padding: 8px 16px; background: #1e88e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    👁️ Show
+                </button>
+                <button onclick="clearToken()" style="padding: 8px 16px; background: #f93e3e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    Clear
+                </button>
+            </div>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">This token will be used for all protected endpoints marked with 🔒. It's securely cached in your browser.</p>
+        </div>
+    </div>    <div class="container">
+        <div class="section">
+            <h2>Public Endpoints</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/agents</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>List all agents with their status and details</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/agents')">Copy</button>
+                        <div class="curl-example">curl http://localhost:8000/agents</div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <button onclick="tryRequest('/agents', 'GET', false)">Execute</button>
+                        <div id="result--agents" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/agents/{id}</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Get specific agent by ID</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Parameters</div>
+                        <div><code>id</code> - Agent ID (integer)</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/agents/1')">Copy</button>
+                        <div class="curl-example">curl http://localhost:8000/agents/1</div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--agents-id" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--agents-id" placeholder="Agent ID" value="1">
+                        </div>
+                        <button onclick="tryRequest('/agents/{id}', 'GET', false)">Execute</button>
+                        <div id="result--agents-id" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/tasks</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>List all tasks ordered by priority</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl http://localhost:8000/tasks<button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/tasks')">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <button onclick="tryRequest('/tasks', 'GET', false)">Execute</button>
+                        <div id="result--tasks" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/tasks/{id}</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Get specific task by ID</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl http://localhost:8000/tasks/1<button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/tasks/1')">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--tasks-id" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--tasks-id" placeholder="Task ID" value="1">
+                        </div>
+                        <button onclick="tryRequest('/tasks/{id}', 'GET', false)">Execute</button>
+                        <div id="result--tasks-id" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/tasks/{id}/status</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Get current status of a task</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl http://localhost:8000/tasks/1/status<button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/tasks/1/status')">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--tasks-id-status" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--tasks-id-status" placeholder="Task ID" value="1">
+                        </div>
+                        <button onclick="tryRequest('/tasks/{id}/status', 'GET', false)">Execute</button>
+                        <div id="result--tasks-id-status" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/tools</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>List all available tools for agents</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl http://localhost:8000/tools<button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/tools')">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <button onclick="tryRequest('/tools', 'GET', false)">Execute</button>
+                        <div id="result--tools" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/logs</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Get execution logs</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Query Parameters</div>
+                        <div><code>limit</code> - Max results (default: 100)</div>
+                        <div><code>agent_id</code> - Filter by agent ID</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl http://localhost:8000/logs?limit=10<button class="copy-btn" onclick="copyToClipboard('curl http://localhost:8000/logs?limit=10')">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <button onclick="tryRequest('/logs?limit=10', 'GET', false)">Execute</button>
+                        <div id="result--logs-limit-10" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Protected Endpoints</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/agents</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Create a new agent</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Request Body</div>
+                        <div><code>name</code> (required), <code>description</code>, <code>status</code></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <button class="copy-btn" onclick="copyToClipboard(`curl -X POST http://localhost:8000/agents \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"name\":\"NewAgent\",\"description\":\"Test agent\"}'`)">Copy</button>
+                        <div class="curl-example">curl -X POST http://localhost:8000/agents \
+  -H "Authorization: Bearer test_token_12345abcdef67890" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"NewAgent","description":"Test agent"}'</div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="body--agents-post" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Request Body (JSON):</label>
+                            <textarea id="body--agents-post" placeholder="Request body (JSON)">{"name":"NewAgent","description":"Test agent"}</textarea>
+                        </div>
+                        <button onclick="tryRequest('/agents', 'POST', true)">Execute</button>
+                        <div id="result--agents-post" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/agents/{id}</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Update agent details</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl -X PUT http://localhost:8000/agents/1 \
+  -H "Authorization: Bearer test_token_12345abcdef67890" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"paused"}'<button class="copy-btn" onclick="copyToClipboard(`curl -X PUT http://localhost:8000/agents/1 \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"status\":\"paused\"}'`)">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--agents-id-put" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--agents-id-put" placeholder="Agent ID" value="1">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label for="body--agents-id-put" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Request Body (JSON):</label>
+                            <textarea id="body--agents-id-put" placeholder="Request body (JSON)">{"status":"paused"}</textarea>
+                        </div>
+                        <button onclick="tryRequest('/agents/{id}', 'PUT', true)">Execute</button>
+                        <div id="result--agents-id-put" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/agents/{id}</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Delete an agent</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl -X DELETE http://localhost:8000/agents/1 \
+  -H "Authorization: Bearer test_token_12345abcdef67890"<button class="copy-btn" onclick="copyToClipboard(`curl -X DELETE http://localhost:8000/agents/1 \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890'`)">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--agents-id-delete" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--agents-id-delete" placeholder="Agent ID" value="1">
+                        </div>
+                        <button onclick="tryRequest('/agents/{id}', 'DELETE', true)">Execute</button>
+                        <div id="result--agents-id-delete" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/tasks</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Create a new task</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Request Body</div>
+                        <div><code>title</code> (required), <code>agent_id</code>, <code>description</code>, <code>priority</code></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl -X POST http://localhost:8000/tasks \
+  -H "Authorization: Bearer test_token_12345abcdef67890" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"New Task","agent_id":2,"priority":5}'<button class="copy-btn" onclick="copyToClipboard(`curl -X POST http://localhost:8000/tasks \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"title\":\"New Task\",\"agent_id\":2,\"priority\":5}'`)">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="body--tasks-post" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Request Body (JSON):</label>
+                            <textarea id="body--tasks-post" placeholder="Request body (JSON)">{"title":"New Task","agent_id":2,"priority":5}</textarea>
+                        </div>
+                        <button onclick="tryRequest('/tasks', 'POST', true)">Execute</button>
+                        <div id="result--tasks-post" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/tasks/{id}</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Update task details</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl -X PUT http://localhost:8000/tasks/1 \
+  -H "Authorization: Bearer test_token_12345abcdef67890" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"completed"}'<button class="copy-btn" onclick="copyToClipboard(`curl -X PUT http://localhost:8000/tasks/1 \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"status\":\"completed\"}'`)">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--tasks-id-put" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--tasks-id-put" placeholder="Task ID" value="1">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label for="body--tasks-id-put" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Request Body (JSON):</label>
+                            <textarea id="body--tasks-id-put" placeholder="Request body (JSON)">{"status":"completed"}</textarea>
+                        </div>
+                        <button onclick="tryRequest('/tasks/{id}', 'PUT', true)">Execute</button>
+                        <div id="result--tasks-id-put" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/tasks/{id}</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Delete a task</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl -X DELETE http://localhost:8000/tasks/1 \
+  -H "Authorization: Bearer test_token_12345abcdef67890"<button class="copy-btn" onclick="copyToClipboard(`curl -X DELETE http://localhost:8000/tasks/1 \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890'`)">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--tasks-id-delete" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--tasks-id-delete" placeholder="Task ID" value="1">
+                        </div>
+                        <button onclick="tryRequest('/tasks/{id}', 'DELETE', true)">Execute</button>
+                        <div id="result--tasks-id-delete" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/agents/{id}/execute</span>
+                    <span class="lock-icon">🔒</span>
+                </div>
+                <div class="endpoint-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div>Execute an agent and log the action</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">cURL Example</div>
+                        <div class="curl-example">curl -X POST http://localhost:8000/agents/1/execute \
+  -H "Authorization: Bearer test_token_12345abcdef67890"<button class="copy-btn" onclick="copyToClipboard(`curl -X POST http://localhost:8000/agents/1/execute \\\n  -H 'Authorization: Bearer test_token_12345abcdef67890'`)">Copy</button></div>
+                    </div>
+                    <div class="try-it">
+                        <strong>Try it out:</strong>
+                        <div style="margin-bottom: 10px;">
+                            <label for="param--agents-id-execute-post" style="display: block; margin-bottom: 5px; font-weight: 600; color: #666;">Path Parameter:</label>
+                            <input type="text" id="param--agents-id-execute-post" placeholder="Agent ID" value="1">
+                        </div>
+                        <button onclick="tryRequest('/agents/{id}/execute', 'POST', true)">Execute</button>
+                        <div id="result--agents-id-execute-post" class="response-box" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
