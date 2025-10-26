@@ -20,6 +20,12 @@ if ($uri === '/docs' || $uri === '/') {
     exit;
 }
 
+if ($uri === '/tests' || $uri === '/tests/test.html') {
+    header('Content-Type: text/html');
+    readfile('tests/test.html');
+    exit;
+}
+
 $routes = [
     'GET' => [
         '/agents' => 'agents.php',

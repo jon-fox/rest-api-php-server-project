@@ -11,11 +11,45 @@ Step by Step to Get Started (Assuming all pre reqs are installed and MySQL is av
 5. We should be good to call the agent endpoints
 
 Testing
---------
+-------
 
-We can test the endpoints using `/code/test.sh`, running locally will test the endpoints
+### Automated Test Suite
 
-We can run the html tests running `http://localhost:8000/../tests/test.html` via webpage
+Two test methods are available to validate all 14 API endpoints:
+
+**1. Shell Script (Command Line):**
+
+```bash
+cd code
+./tests/test_api.sh
+```
+- Bash script using cURL
+- Runs sequentially through all endpoints
+- Shows pass/fail status with HTTP codes
+- Creates/cleans up test data automatically
+- Outputs results to terminal
+- No server required (uses localhost:8000)
+
+**2. HTML/JavaScript (Browser):**
+
+From the `code/` directory, open the test file in your browser:
+```bash
+open tests/test.html          # macOS
+xdg-open tests/test.html      # Linux
+```
+```cmd
+start tests\test.html         # Windows (Command Prompt)
+```
+```powershell
+Invoke-Item tests\test.html   # Windows (PowerShell)
+```
+Or manually open the file `code/tests/test.html` in any browser
+
+- Interactive UI in browser
+- Click "Run All Tests" button to execute
+- Real-time test execution with visual feedback
+- Detailed request/response display
+- Summary statistics with timing
 
 
 Outstanding Items
