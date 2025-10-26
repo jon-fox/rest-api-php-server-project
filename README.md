@@ -10,6 +10,29 @@ Step by Step to Get Started (Assuming all pre reqs are installed and MySQL is av
 
 5. We should be good to call the agent endpoints
 
+NGINX Deployment
+-----------------------------------
+
+For deployment with NGINX and PHP-FPM:
+
+```bash
+./deploy/setup_nginx.sh
+```
+
+This automated script will:
+- Check NGINX and PHP-FPM installation
+- Generate NGINX configuration
+- Start/configure services
+- Test the deployment
+- API will be available at http://localhost:8000
+
+See `deploy/README.md` for detailed instructions and troubleshooting.
+
+To stop NGINX:
+```bash
+./deploy/stop_nginx.sh
+```
+
 Testing
 -------
 
@@ -68,10 +91,13 @@ Outstanding Items
 - Save in `presentation/` directory
 
 ### 3. **NGINX Deployment** (10 points)
-- Deploy API using NGINX
-- Create Marp tutorial with screenshots
-- Show NGINX server working
-- Save in `presentation/` directory
+- ✅ Automated deployment script created (`deploy/setup_nginx.sh`)
+- Create Marp tutorial with screenshots showing:
+  - Running `./deploy/setup_nginx.sh`
+  - NGINX configuration file
+  - Testing endpoints at http://localhost:8000
+  - Viewing logs
+- Save Marp slides in `presentation/` directory
 
 ### 4. **Documentation Updates** (required, no direct points but lose all points if not done)
 - Copy HW4_plan_stage1.md to `plan/` directory with actual completion dates
