@@ -47,7 +47,7 @@ Total points earned in this section:
 | cURL test code (all APIs)           | 10      | [10 /10]  |
 | HTML/JS test code (all APIs)        | 10      | [10 /10]  |
 | DB integration (CRUD)               | 5      | [5 /5]  |
-| GitHub repository link              | 10      | [5 /10]  |
+| GitHub repository link              | 10      | [10 /10]  |
 | Copy in `code/` directory           | T/F     | [ T ] |
 | **Total**                           | **65** | [65 /65] |
 
