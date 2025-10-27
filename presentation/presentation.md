@@ -34,6 +34,8 @@ DB_PASS=123456
 
 Tip: Keep this file local. Values above are for local dev only.
 
+![w:1100](screenshots/env-file.png)
+
 ---
 
 ## 2) Initialize Database
@@ -45,6 +47,8 @@ DB_HOST=127.0.0.1 DB_PORT=3306 DB_USER=root DB_PASS=123456 ./setup.sh
 ```
 
 - Creates DB and tables, optional seed data
+
+![w:1100](screenshots/db-setup.png)
 
 ---
 
@@ -58,6 +62,8 @@ php -S localhost:8000
 
 Visit:
 - http://localhost:8000/docs
+
+![w:1100](screenshots/php-direct-start.png)
 
 ---
 
@@ -77,6 +83,10 @@ Stop:
 ./deploy/stop_nginx.sh
 ```
 
+![w:1100](screenshots/nginx-start.png)
+
+![w:900](screenshots/nginx-stop.png)
+
 ---
 
 ## 5) Generate Auth Token
@@ -90,6 +100,8 @@ From `code/`:
 - Inserts token into DB
 - Use “Authorization: Bearer <token>” in protected calls
 
+![w:1100](screenshots/token-generated.png)
+
 ---
 
 ## 6) Test — Shell Suite
@@ -102,6 +114,10 @@ From `code/`:
 
 - Runs cURL tests against all endpoints
 - Shows HTTP codes and pass/fail
+
+![w:1100](screenshots/tests-curl.png)
+
+![w:900](screenshots/tests-shell-database.png)
 
 ---
 
@@ -118,6 +134,8 @@ xdg-open code/tests/test.html   # Linux
 - Click “Run All Tests”
 - See per-endpoint results
 
+![w:1100](screenshots/tests-browser.png)
+
 ---
 
 ## 8) Docs Page
@@ -125,6 +143,8 @@ xdg-open code/tests/test.html   # Linux
 - http://localhost:8000/docs
 - Try endpoints interactively
 - Paste the Bearer token for protected routes
+
+![w:1100](screenshots/swagger-docs.png)
 
 ---
 
