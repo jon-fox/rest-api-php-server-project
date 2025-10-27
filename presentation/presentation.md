@@ -31,41 +31,345 @@ size: 16:9
 
  ---
 
-## Endpoints Overview
+## API Endpoints Summary
 
-- Agents: list, get, create, update, delete
-- Tasks: list, get, create, update, delete
-- Tools: list, create
-- Logs: list
+**14 Total Endpoints:**
+- 7 Public (GET) - no auth required
+- 7 Protected - require Bearer token
 
----
-
-## Protected Endpoints (Bearer)
-
-- POST/PUT/DELETE for Agents and Tasks
-- POST Tools, Logs write endpoints
-- Provide header: `Authorization: Bearer <token>`
+**Resources:**
+- Agents (5 endpoints)
+- Tasks (6 endpoints)
+- Tools (1 endpoint)
+- Logs (1 endpoint)
 
 ---
 
-## Sample Request (Protected)
+## 1. GET /agents
 
-Create Agent:
+**Purpose:** List all agents with their status and details  
+**Auth:** None  
+**Response:** Array of agent objects
+
+```json
+[
+  {
+    "id": 1,
+    "name": "DataCollector",
+    "description": "Collects and processes data from various sources",
+    "status": "idle",
+    "created_at": "2025-10-26 22:06:58",
+    "updated_at": "2025-10-26 22:06:58"
+  }
+  // ... more agents
+]
+```
+
+---
+
+## 2. GET /agents/{id}
+
+**Purpose:** Get specific agent by ID  
+**Auth:** None  
+**Parameters:** `id` (path, integer)  
+**Response:** Agent object or 404
+
+```json
+{
+  "id": 1,
+  "name": "DataCollector",
+  "description": "Collects and processes data from various sources",
+  "status": "idle",
+  "created_at": "2025-10-26 22:06:58",
+  "updated_at": "2025-10-26 22:06:58"
+}
+```
+
+---
+
+## 3. POST /agents 🔒
+
+**Purpose:** Create a new agent  
+**Auth:** Bearer token required  
+**Body:**
+```json
+{
+  "name": "NewAgent",
+  "description": "Test agent"
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "4",
+  "message": "Agent created"
+}
+```
+
+---
+
+## 4. PUT /agents/{id} 🔒
+
+**Purpose:** Update agent details  
+**Auth:** Bearer token required  
+**Parameters:** `id` (path)  
+**Body:** Partial update allowed
+```json
+{
+  "status": "paused"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Agent updated"
+}
+```
+
+---
+
+## 5. DELETE /agents/{id} 🔒
+
+**Purpose:** Delete agent (cascades to tasks/logs)  
+**Auth:** Bearer token required  
+**Parameters:** `id` (path, integer)
+
+**Response:**
+```json
+{
+  "message": "Agent deleted"
+}
+```
+
+**Note:** All related tasks and logs are also deleted
+
+---
+
+## 6. POST /agents/{id}/execute 🔒
+
+**Purpose:** Execute an agent and log the action  
+**Auth:** Bearer token required  
+**Parameters:** `id` (path)  
+**Effect:** Sets status to "running", logs execution start
+
+**Response:**
+```json
+{
+  "message": "Agent execution started",
+  "agent_id": "2"
+}
+```
+
+---
+
+## 7. GET /tasks
+
+**Purpose:** List all tasks ordered by priority  
+**Auth:** None  
+**Response:** Array of task objects
+
+```json
+[
+  {
+    "id": 4,
+    "agent_id": 3,
+    "title": "Check system status",
+    "description": "Monitor CPU and memory usage",
+    "status": "running",
+    "priority": 3,
+    "created_at": "2025-10-26 22:06:58",
+    "updated_at": "2025-10-26 22:06:58"
+  },
+  //.... other agent tasks
+]
+```
+
+---
+
+## 8. GET /tasks/{id}
+
+**Purpose:** Get specific task by ID  
+**Auth:** None  
+**Parameters:** `id` (path, integer)  
+**Response:** Task object or 404
+
+```json
+{
+  "id": 1,
+  "agent_id": 1,
+  "title": "Fetch weather data",
+  "description": "Collect weather information from API",
+  "status": "pending",
+  "priority": 1,
+  "created_at": "2025-10-26 22:06:58",
+  "updated_at": "2025-10-26 22:06:58"
+}
+```
+
+---
+
+## 9. GET /tasks/{id}/status
+
+**Purpose:** Get current status of a task (lightweight)  
+**Auth:** None  
+**Parameters:** `id` (path, integer)
+
+**Response:**
+```json
+{
+  "task_id": 1,
+  "status": "pending"
+}
+```
+
+**Use case:** Polling for status updates
+
+---
+
+## 10. POST /tasks 🔒
+
+**Purpose:** Create a new task  
+**Auth:** Bearer token required  
+**Body:**
+```json
+{
+  "title": "New Task",
+  "agent_id": 2,
+  "priority": 5
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "5",
+  "message": "Task created"
+}
+```
+
+---
+
+## 11. PUT /tasks/{id} 🔒
+
+**Purpose:** Update task details  
+**Auth:** Bearer token required  
+**Parameters:** `id` (path)  
+**Body:** Partial update allowed
+```json
+{
+  "status": "completed"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Task updated"
+}
+```
+
+---
+
+## 12. DELETE /tasks/{id} 🔒
+
+**Purpose:** Delete task  
+**Auth:** Bearer token required  
+**Parameters:** `id` (path, integer)
+
+**Response:**
+```json
+{
+  "message": "Task deleted"
+}
+```
+
+---
+
+## 13. GET /tools
+
+**Purpose:** List all available tools for agents  
+**Auth:** None  
+**Response:** Array of tool objects (sorted by category, name)
+
+```json
+[
+  {
+    "id": 5,
+    "name": "Email Sender",
+    "description": "Sends email notifications",
+    "category": "communication",
+    "created_at": "2025-10-26 22:06:58"
+  },
+  // .. other agent tools
+]
+```
+
+---
+
+## 14. GET /logs
+
+<table>
+  <tr>
+    <td width="45%" valign="top">
+      <p><strong>Purpose:</strong> Get execution logs</p>
+      <p><strong>Auth:</strong> None</p>
+      <p><strong>Query Parameters:</strong></p>
+      <ul>
+        <li><code>limit</code> (integer, default 100) - Max results</li>
+        <li><code>agent_id</code> (integer, optional) - Filter by agent</li>
+      </ul>
+    </td>
+    <td width="55%" valign="top">
+      <p><strong>Response:</strong></p>
+      <pre><code>{
+  "id": 1,
+  "agent_id": 1,
+  "task_id": 1,
+  "level": "info",
+  "message": "Task started successfully",
+  "created_at": "2025-10-26 22:06:58"
+}
+// ... more logs</code></pre>
+    </td>
+  </tr>
+</table>
+
+---
+
+## Authentication Example
+
+Protected endpoints require Bearer token:
 
 ```bash
 curl -X POST http://localhost:8000/agents \
-  -H "Authorization: Bearer $TOKEN" \
+  -H "Authorization: Bearer test_token_12345abcdef67890" \
   -H "Content-Type: application/json" \
-  -d '{"name":"DemoAgent","description":"test"}'
+  -d '{"name":"NewAgent","description":"Test agent"}'
+```
+
+**Generate token:**
+```bash
+cd code && ./generate_token.sh
 ```
 
 ---
 
-## Sample Response
+## Error Responses
+
+All endpoints return consistent error format:
 
 ```json
-{ "id": 1, "name": "DemoAgent", "status": "idle" }
+{
+  "error": "Agent not found"
+}
 ```
+
+**HTTP Status Codes:**
+- 200 OK, 201 Created
+- 400 Bad Request, 401 Unauthorized, 404 Not Found
+- 405 Method Not Allowed, 500 Internal Server Error
 
 ---
 
