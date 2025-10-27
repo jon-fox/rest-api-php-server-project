@@ -13,25 +13,14 @@ Step by Step to Get Started (Assuming all pre reqs are installed and MySQL is av
 NGINX Deployment
 -----------------------------------
 
-For deployment with NGINX and PHP-FPM:
+Alternative to PHP built-in server - use NGINX with PHP-FPM:
 
 ```bash
-./deploy/setup_nginx.sh
+./deploy/start_nginx.sh    # Start NGINX on port 8000
+./deploy/stop_nginx.sh     # Stop NGINX
 ```
 
-This automated script will:
-- Check NGINX and PHP-FPM installation
-- Generate NGINX configuration
-- Start/configure services
-- Test the deployment
-- API will be available at http://localhost:8000
-
-See `deploy/README.md` for detailed instructions and troubleshooting.
-
-To stop NGINX:
-```bash
-./deploy/stop_nginx.sh
-```
+Auto-generates config, starts PHP-FPM if needed, and tests deployment.
 
 Testing
 -------
@@ -91,12 +80,8 @@ Outstanding Items
 - Save in `presentation/` directory
 
 ### 3. **NGINX Deployment** (10 points)
-- ✅ Automated deployment script created (`deploy/setup_nginx.sh`)
-- Create Marp tutorial with screenshots showing:
-  - Running `./deploy/setup_nginx.sh`
-  - NGINX configuration file
-  - Testing endpoints at http://localhost:8000
-  - Viewing logs
+- ✅ Automated scripts created (`deploy/start_nginx.sh`, `deploy/stop_nginx.sh`)
+- Create Marp tutorial with screenshots
 - Save Marp slides in `presentation/` directory
 
 ### 4. **Documentation Updates** (required, no direct points but lose all points if not done)

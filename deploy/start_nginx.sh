@@ -1,106 +1,78 @@
 #!/bin/bash
-
-# Start NGINX with PHP-FPM for REST API
-
+# Minimal NGINX starter for this project (macOS/Linux)
+# - Generates a self-contained NGINX config pointing to ./code
+# - Uses PHP-FPM at 127.0.0.1:9000 by default (works with Homebrew PHP)
+# - No external includes or OS-specific paths
+# - Does NOT manage services; start/stop PHP-FPM yourself if needed
 set -e
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Paths
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CODE_DIR="$PROJECT_ROOT/code"
-DEPLOY_DIR="$PROJECT_ROOT/deploy"
-NGINX_CONFIG="$DEPLOY_DIR/nginx_api.conf"
+CONF="$PROJECT_ROOT/deploy/nginx_api.conf"
+LOG_DIR="$PROJECT_ROOT/deploy"
+mkdir -p "$LOG_DIR"
+echo "Starting NGINX for REST API"
 
-echo -e "${BLUE}Starting REST API with NGINX${NC}"
-echo ""
+# Generate config (idempotent)
+cat > "$CONF" << EOF
+# Auto-generated; edit or re-run script to update
 
-# Check if config exists, generate if needed
-if [ ! -f "$NGINX_CONFIG" ]; then
-    echo -e "${YELLOW}Generating NGINX configuration...${NC}"
-    
-    # Detect PHP-FPM socket
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        PHP_FPM_SOCK="/opt/homebrew/var/run/php-fpm.sock"
-        [ ! -S "$PHP_FPM_SOCK" ] && PHP_FPM_SOCK="/usr/local/var/run/php-fpm.sock"
-        [ ! -S "$PHP_FPM_SOCK" ] && PHP_FPM_SOCK="127.0.0.1:9000"
-    else
-        PHP_FPM_SOCK="/run/php/php-fpm.sock"
-        [ ! -S "$PHP_FPM_SOCK" ] && PHP_FPM_SOCK="/var/run/php-fpm.sock"
-        [ ! -S "$PHP_FPM_SOCK" ] && PHP_FPM_SOCK="127.0.0.1:9000"
-    fi
-    
-    cat > "$NGINX_CONFIG" << EOFCONFIG
-server {
+# Full config so we can run: nginx -c $CONF
+
+events {}
+
+http {
+  server {
     listen 8000;
     server_name localhost;
     root $CODE_DIR;
     index index.php;
-    
-    access_log $DEPLOY_DIR/nginx_access.log;
-    error_log $DEPLOY_DIR/nginx_error.log;
-    
+
+    # Route everything through index.php (front controller)
     location / {
-        try_files \$uri /index.php\$is_args\$args;
+      try_files \$uri /index.php?\$args;
     }
-    
+
     location ~ \.php$ {
-        fastcgi_pass unix:$PHP_FPM_SOCK;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        include fastcgi_params;
-        fastcgi_read_timeout 300;
+      # Prefer TCP for portability; change to unix:/path/to/php-fpm.sock if desired
+      fastcgi_pass 127.0.0.1:9000;
+      fastcgi_index index.php;
+  # Minimal required params (self-contained)
+  fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+  fastcgi_param QUERY_STRING    \$query_string;
+  fastcgi_param REQUEST_METHOD  \$request_method;
+  fastcgi_param CONTENT_TYPE    \$content_type;
+  fastcgi_param CONTENT_LENGTH  \$content_length;
     }
-    
-    location ~ /\. {
-        deny all;
-    }
+
+    # Basic hardening
+    location ~ /\.
+    { deny all; }
+  }
 }
-EOFCONFIG
-    echo -e "${GREEN}✓ Configuration generated${NC}"
+EOF
+
+# Start nginx with our config
+if pgrep -x nginx >/dev/null 2>&1; then
+  echo "Restarting NGINX..."
+  nginx -s quit 2>/dev/null || true
+  sleep 0.5
 fi
 
-# Start PHP-FPM if needed
-if ! pgrep -x php-fpm > /dev/null; then
-    echo -e "${YELLOW}Starting PHP-FPM...${NC}"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        brew services start php 2>/dev/null || php-fpm -D
-    else
-        sudo systemctl start php-fpm
-    fi
-    sleep 2
-    echo -e "${GREEN}✓ PHP-FPM started${NC}"
-else
-    echo -e "${GREEN}✓ PHP-FPM already running${NC}"
+# Free port 8000 if occupied (be polite but effective)
+if command -v lsof >/dev/null 2>&1; then
+  PIDS=$(lsof -tiTCP:8000 -sTCP:LISTEN || true)
+  if [ -n "$PIDS" ]; then
+    echo "Port 8000 in use by: $PIDS — terminating to free the port"
+    kill $PIDS 2>/dev/null || true
+    sleep 0.3
+  fi
 fi
 
-# Start NGINX
-echo -e "${YELLOW}Starting NGINX...${NC}"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    nginx -s quit 2>/dev/null || true
-    sleep 1
-    nginx -c "$NGINX_CONFIG"
-else
-    sudo cp "$NGINX_CONFIG" /etc/nginx/sites-available/rest-api
-    sudo ln -sf /etc/nginx/sites-available/rest-api /etc/nginx/sites-enabled/rest-api
-    sudo systemctl restart nginx
-fi
+echo "Starting NGINX on http://localhost:8000 ..."
+nginx -c "$CONF"
 
-sleep 2
-
-# Quick test
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -q "200"; then
-    echo -e "${GREEN}✓ NGINX started successfully${NC}"
-    echo ""
-    echo -e "${GREEN}API available at: http://localhost:8000${NC}"
-    echo -e "  • Docs: http://localhost:8000/docs"
-    echo -e "  • Tests: http://localhost:8000/tests"
-else
-    echo -e "${RED}✗ NGINX may not be responding${NC}"
-    echo "Check: tail -f $DEPLOY_DIR/nginx_error.log"
-fi
+echo "NGINX is running. If you see 502, ensure PHP-FPM is running on 127.0.0.1:9000"
+echo "Try:"
+echo "  macOS:   brew services start php"
+echo "  Linux:   sudo systemctl start php-fpm"
