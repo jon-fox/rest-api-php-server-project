@@ -12,168 +12,24 @@ size: 16:9
 
 ---
 
+## Agent State Controller
+
+- Manages agent lifecycle: idle, running, paused, error
+- CRUD for agents, tasks, tools; logs for execution history
+- Bearer token auth for mutating operations
+- Front controller via PHP (built-in) or NGINX + PHP-FPM
+- Docs page and two test suites included
+
+---
+ 
+
 ## Prerequisites
 
 - PHP 8+, MySQL (or MariaDB)
 - (Optional) NGINX + PHP-FPM
 - VS Code (for editing), curl (for tests)
 
----
-
-## 1) Configure Database (.env)
-
-Create `code/.env`:
-
-```env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_NAME=agent_management
-DB_USER=root
-DB_PASS=123456
-```
-
-Tip: Keep this file local. Values above are for local dev only.
-
-![w:1100](screenshots/env-file.png)
-
----
-
-## 2) Initialize Database
-
-From `code/database/`:
-
-```bash
-DB_HOST=127.0.0.1 DB_PORT=3306 DB_USER=root DB_PASS=123456 ./setup.sh
-```
-
-- Creates DB and tables, optional seed data
-
-![w:1100](screenshots/db-setup.png)
-
----
-
-## 3) Start Server (PHP built-in)
-
-From `code/`:
-
-```bash
-php -S localhost:8000
-```
-
-Visit:
-- http://localhost:8000/docs
-
-![w:1100](screenshots/php-direct-start.png)
-
----
-
-## 4) Start Server (NGINX script)
-
-From project root:
-
-```bash
-./deploy/start_nginx.sh
-```
-
-- Auto-generates config, starts services if needed
-- Visit http://localhost:8000/docs
-
-Stop:
-```bash
-./deploy/stop_nginx.sh
-```
-
-![w:1100](screenshots/nginx-start.png)
-
-![w:900](screenshots/nginx-stop.png)
-
----
-
-## 5) Generate Auth Token
-
-From `code/`:
-
-```bash
-./generate_token.sh
-```
-
-- Inserts token into DB
-- Use “Authorization: Bearer <token>” in protected calls
-
-![w:1100](screenshots/token-generated.png)
-
----
-
-## 6) Test — Shell Suite
-
-From `code/`:
-
-```bash
-./tests/test_api.sh
-```
-
-- Runs cURL tests against all endpoints
-- Shows HTTP codes and pass/fail
-
-![w:1100](screenshots/tests-curl.png)
-
-![w:900](screenshots/tests-shell-database.png)
-
----
-
-## 7) Test — Browser Suite
-
-Open:
-
-```bash
-open code/tests/test.html       # macOS
-# or
-xdg-open code/tests/test.html   # Linux
-```
-
-- Click “Run All Tests”
-- See per-endpoint results
-
-![w:1100](screenshots/tests-browser.png)
-
----
-
-## 8) Docs Page
-
-- http://localhost:8000/docs
-- Try endpoints interactively
-- Paste the Bearer token for protected routes
-
-![w:1100](screenshots/swagger-docs.png)
-
----
-
-## 9) Troubleshooting (Quick)
-
-- DB errors: check `code/.env` values
-- 502 in NGINX: ensure PHP-FPM is running
-  - macOS: `brew services start php`
-  - Linux/WSL: `sudo systemctl start php-fpm`
-- Port busy: script frees 8000 automatically
-
----
-
-## 10) What’s Included
-
-- REST API (PHP) with MySQL (PDO)
-- Auth via `api_tokens` table
-- `./deploy/start_nginx.sh` + `./deploy/stop_nginx.sh`
-- Docs page + two test suites
-
----
-
-## Export & Submit
-
-- Open this file in VS Code with Marp extension
-- Export to PDF and commit both `.md` and `.pdf`
-- Ensure README has quick-start and .env sample
-
----
+ ---
 
 ## Endpoints Overview
 
@@ -249,6 +105,186 @@ curl -X POST http://localhost:8000/agents \
 
 - `./setup.sh` prompts to load seed.sql
 - Provides sample agents/tasks/tools/logs
+
+---
+
+## 1) Configure Database (.env)
+
+Create `code/.env`:
+
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=agent_management
+DB_USER=root
+DB_PASS=123456
+```
+
+Tip: Keep this file local. Values above are for local dev only.
+
+<div align="center">
+  <img src="screenshots/env-file.png" height="200" />
+</div>
+
+---
+
+## 2) Initialize Database
+
+From `code/database/`:
+
+```bash
+DB_HOST=127.0.0.1 DB_PORT=3306 DB_USER=root DB_PASS=123456 ./setup.sh
+```
+
+- Creates DB and tables, optional seed data
+
+<div align="center">
+  <img src="screenshots/db-setup.png" height="200" />
+</div>
+
+---
+
+## 3) Start Server (PHP built-in)
+
+<table>
+  <tr>
+    <td width="35%" valign="top">
+      <p><strong>From <code>code/</code>:</strong></p>
+      <pre><code>php -S localhost:8000</code></pre>
+      <p><strong>Visit:</strong></p>
+      <ul>
+        <li>http://localhost:8000/docs</li>
+      </ul>
+    </td>
+    <td width="60%" align="right" valign="middle" style="padding-left: 24px;">
+      <img src="screenshots/php-direct-start.png" height="240" />
+    </td>
+  </tr>
+  
+</table>
+
+---
+
+## 4) Start Server (NGINX script)
+
+<table>
+  <tr>
+    <td width="55%" valign="top">
+      <p><strong>From project root:</strong></p>
+      <pre><code>./deploy/start_nginx.sh</code></pre>
+      <ul>
+        <li>Auto-generates config, starts services if needed</li>
+        <li>Visit http://localhost:8000/docs</li>
+      </ul>
+      <p><strong>Stop:</strong></p>
+      <pre><code>./deploy/stop_nginx.sh</code></pre>
+    </td>
+    <td width="45%" align="right" valign="middle" style="padding-left: 24px;">
+      <div><img src="screenshots/nginx-start.png" height="160" /></div>
+      <div style="margin-top: 12px;"><img src="screenshots/nginx-stop.png" height="160" /></div>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 5) Generate Auth Token
+
+From `code/`:
+
+```bash
+./generate_token.sh
+```
+
+- Inserts token into DB
+- Use “Authorization: Bearer <token>” in protected calls
+
+<div align="center">
+  <img src="screenshots/token-generated.png" height="200" />
+</div>
+
+---
+
+## 6) Test — Shell Suite
+
+From `code/`:
+
+```bash
+./tests/test_api.sh
+```
+
+- Runs cURL tests against all endpoints
+- Shows HTTP codes and pass/fail
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/tests-curl.png" height="200" />
+      <div><strong>cURL run</strong></div>
+    </td>
+    <td align="center">
+      <img src="screenshots/tests-shell-database.png" height="200" />
+      <div><strong>DB verification</strong></div>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 7) Test — Browser Suite
+
+Open:
+
+```bash
+open code/tests/test.html       # macOS
+# or
+xdg-open code/tests/test.html   # Linux
+```
+
+- Click “Run All Tests”
+- See per-endpoint results
+
+<div align="center">
+  <img src="screenshots/tests-browser.png" height="200" />
+</div>
+
+---
+
+## 8) Docs Page
+
+<table>
+  <tr>
+    <td width="55%" valign="top">
+      <ul>
+        <li>http://localhost:8000/docs</li>
+        <li>Try endpoints interactively</li>
+        <li>Paste the Bearer token for protected routes</li>
+      </ul>
+    </td>
+    <td width="45%" align="right" valign="middle">
+      <img src="screenshots/swagger-docs.png" height="340" />
+    </td>
+  </tr>
+</table>
+
+---
+
+## 9) Troubleshooting (Quick)
+
+- DB errors: check `code/.env` values
+- 502 in NGINX: ensure PHP-FPM is running
+  - macOS: `brew services start php`
+  - Linux/WSL: `sudo systemctl start php-fpm`
+- Port busy: script frees 8000 automatically
+
+---
+
+## 10) What’s Included
+
+- REST API (PHP) with MySQL (PDO)
+- Auth via `api_tokens` table
+- `./deploy/start_nginx.sh` + `./deploy/stop_nginx.sh`
+- Docs page + two test suites
 
 ---
 
