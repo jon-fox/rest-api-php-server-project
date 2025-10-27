@@ -98,7 +98,7 @@ Outstanding Items
 - Save in `presentation/` directory
 
 ### 3. **NGINX Deployment** (10 points)
-- ✅ Automated scripts created (`deploy/start_nginx.sh`, `deploy/stop_nginx.sh`)
+- Automated scripts created (`deploy/start_nginx.sh`, `deploy/stop_nginx.sh`)
 - Create Marp tutorial with screenshots
 - Save Marp slides in `presentation/` directory
 

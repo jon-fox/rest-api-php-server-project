@@ -6,8 +6,10 @@ MySQL database for AI agent management system with task tracking, tool registry,
 
 ## Setup
 
+Use TCP settings that match `code/.env` (local defaults):
+
 ```bash
-./setup.sh
+DB_HOST=127.0.0.1 DB_PORT=3306 DB_USER=root DB_PASS=123456 ./setup.sh
 ```
 
 Prompts for MySQL credentials and optionally loads seed data.
