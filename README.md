@@ -22,6 +22,24 @@ Alternative to PHP built-in server - use NGINX with PHP-FPM:
 
 Auto-generates config, starts PHP-FPM if needed, and tests deployment.
 
+Quick local .env (required)
+-----------------------------------
+Create `code/.env` with these local values so PHP can connect:
+
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=agent_management
+DB_USER=root
+DB_PASS=123456
+```
+
+Then run:
+
+```bash
+./deploy/start_nginx.sh
+```
+
 Testing
 -------
 
