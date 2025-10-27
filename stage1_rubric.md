@@ -56,13 +56,13 @@ Total points earned in this section:
 ## 🔹 Tutorial Slides (25 pts)
 
 - [15 /15] Created **Marp slides** explaining API usage (more than 20 pages (and converted into PDFs) - explanation/example for each API, 7 points if not, 0 points if none)
-  - List Marp file name:
+  - List Marp file name: presentation/presentation.md
   - [T] Clear explanation of each endpoint: May lose points if not clearly explained
 - [5 /5] Includes examples of requests/responses - no partial points
 - [5 /5] Slides (and PDFs) uploaded to **GitHub** - no partial points
-  - Convert the marp to PDF:
-  - Write your GitHub repository marp link:
-  - Write your GitHub repository PDF link:
+  - Convert the marp to PDF: presentation/presentation.pdf
+  - Write your GitHub repository marp link: https://github.com/jon-fox/rest-api-php-server-project/blob/main/presentation/presentation.md
+  - Write your GitHub repository PDF link: https://github.com/jon-fox/rest-api-php-server-project/blob/main/presentation/presentation.pdf
 - [T] Saved in `presentation/` directory  
   - Earn 0 points in this section when you do not copy your slides.
 
