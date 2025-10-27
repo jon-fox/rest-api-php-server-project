@@ -7,7 +7,7 @@ title: Stage 1 – REST API Foundations
 
 # Stage 1  
 
-## Sercure & Deployable REST API
+## Secure & Deployable REST API
 
 ---
 
