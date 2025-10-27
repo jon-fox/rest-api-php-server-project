@@ -30,7 +30,7 @@ Total Points: 100
 
 - [5 /5] Database integration working (CRUD) - Full points if MySQL works fine, no partial points
   - List your MySQL table names: agents, tasks, tools, logs, api_tokens
-- [ /10] Code pushed to **GitHub repository** - Full points if pushed to GitHub and provide a link, no partial points 
+- [10 /10] Code pushed to **GitHub repository** - Full points if pushed to GitHub and provide a link, no partial points 
   - Write your GitHub repository link: https://github.com/jon-fox/rest-api-php-server-project
 - [T] Copy included in `code/` directory  
   - List your zip file name in the code directory: code-backup.zip
