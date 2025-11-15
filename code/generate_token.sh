@@ -1,33 +1,34 @@
 #!/bin/bash
 
-DB_USER="${DB_USER:-root}"
-DB_PASS="${DB_PASS:-}"
-DB_HOST="${DB_HOST:-localhost}"
-DB_NAME="agent_management"
+cd "$(dirname "$0")"
 
-if [ -z "$DB_PASS" ]; then
-    read -sp "Enter MySQL password for $DB_USER: " DB_PASS
-    echo
-fi
+read -p "Enter user email: " USER_EMAIL
+read -p "Enter token name: " TOKEN_NAME
 
-TOKEN=$(openssl rand -hex 32)
+php -r "
+require 'bootstrap.php';
 
-read -p "Enter token description (optional): " DESCRIPTION
+use App\Models\User;
 
-mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" "$DB_NAME" <<EOF
-INSERT INTO api_tokens (token, description) VALUES ('$TOKEN', '$DESCRIPTION');
-EOF
+\$user = User::where('email', '$USER_EMAIL')->first();
 
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "Token created successfully!"
-    echo "================================"
-    echo "Token: $TOKEN"
-    echo "================================"
-    echo ""
-    echo "Use in requests:"
-    echo "Authorization: Bearer $TOKEN"
-else
-    echo "Error creating token"
-    exit 1
-fi
+if (!\$user) {
+    echo \"User not found. Creating default user...\n\";
+    \$user = User::create([
+        'name' => 'Admin User',
+        'email' => '$USER_EMAIL',
+        'password' => bcrypt('password'),
+    ]);
+}
+
+\$token = \$user->createToken('$TOKEN_NAME')->plainTextToken;
+
+echo \"\n\";
+echo \"Token created successfully!\n\";
+echo \"================================\n\";
+echo \"Token: \$token\n\";
+echo \"================================\n\";
+echo \"\n\";
+echo \"Use in requests:\n\";
+echo \"Authorization: Bearer \$token\n\";
+"

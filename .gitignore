@@ -69,3 +69,8 @@ build/
 
 # Generated runtime/config files
 deploy/nginx_api.conf
+
+# Hugo build artifacts (keep source files, ignore build output)
+.hugo_build.lock
+**/public/
+**/resources/_gen/

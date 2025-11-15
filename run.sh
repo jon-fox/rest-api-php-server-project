@@ -13,7 +13,7 @@ if [ ! -f ".env" ]; then
     echo "Creating .env file..."
     if [ -f ".env.example" ]; then
         cp .env.example .env
-        echo "✓ Created .env from .env.example"
+        echo "Created .env from .env.example"
     else
         cat > .env << 'EOF'
 DB_HOST=127.0.0.1
@@ -22,7 +22,7 @@ DB_NAME=agent_management
 DB_USER=root
 DB_PASS=
 EOF
-        echo "✓ Created default .env file"
+        echo "Created default .env file"
         echo "  Edit code/.env to set your database credentials"
     fi
 fi
@@ -35,7 +35,7 @@ if [ ! -d "vendor" ]; then
         exit 1
     fi
     composer install --no-interaction --prefer-dist --optimize-autoloader
-    echo "✓ Dependencies installed"
+    echo "Dependencies installed"
 fi
 
 echo ""

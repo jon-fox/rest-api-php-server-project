@@ -34,9 +34,9 @@ if pgrep -x nginx > /dev/null; then
         sudo systemctl stop nginx
     fi
     sleep 1
-    echo -e "${GREEN}✓ NGINX stopped${NC}"
+    echo -e "${GREEN}NGINX stopped${NC}"
 else
-    echo -e "${YELLOW}⚠ NGINX is not running${NC}"
+    echo -e "${YELLOW}NGINX is not running${NC}"
 fi
 
 # Optionally stop PHP-FPM (commented out by default)
@@ -48,9 +48,9 @@ fi
 #     elif is_linux; then
 #         sudo systemctl stop php-fpm
 #     fi
-#     echo -e "${GREEN}✓ PHP-FPM stopped${NC}"
+#     echo -e "${GREEN}PHP-FPM stopped${NC}"
 # fi
 
 echo ""
-echo -e "${GREEN}✓ Services stopped${NC}"
+echo -e "${GREEN}Services stopped${NC}"
 echo ""

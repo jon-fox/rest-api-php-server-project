@@ -5,6 +5,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
+use Laravel\Sanctum\Sanctum;
 
 require_once __DIR__ . '/config.php';
 
@@ -25,5 +26,7 @@ $capsule->addConnection([
 $capsule->setEventDispatcher(new Dispatcher(new Container));
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+Sanctum::usePersonalAccessTokenModel(\Laravel\Sanctum\PersonalAccessToken::class);
 
 return $capsule;

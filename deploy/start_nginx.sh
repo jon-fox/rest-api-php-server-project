@@ -168,7 +168,7 @@ wait_for_mysql() {
 if command -v lsof >/dev/null 2>&1; then
   PIDS=$(lsof -tiTCP:8000 -sTCP:LISTEN || true)
   if [ -n "$PIDS" ]; then
-    echo "Port 8000 in use by: $PIDS — terminating to free the port"
+    echo "Port 8000 in use by: $PIDS - terminating to free the port"
     kill $PIDS 2>/dev/null || true
     sleep 0.3
   fi

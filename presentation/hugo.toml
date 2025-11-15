@@ -1,0 +1,24 @@
+baseURL = 'https://YOUR-USERNAME.github.io/rest-api-php-server-project/'
+languageCode = 'en-us'
+title = 'Agent Management REST API'
+theme = 'ananke'
+
+[params]
+description = 'Laravel REST API with Eloquent ORM and Docker deployment'
+author = 'Your Name'
+  
+[[menu.main]]
+  name = 'Home'
+  pageRef = '/'
+  weight = 10
+
+[[menu.main]]
+  name = 'Documentation'
+  pageRef = '/docs'
+  weight = 20
+
+[[menu.main]]
+  name = 'Portfolio'
+  pageRef = '/portfolio'
+  weight = 30
+
