@@ -1,24 +1,25 @@
 <?php
 
+require_once 'bootstrap.php';
 require_once 'config.php';
 
-$pdo = getDbConnection();
+use App\Models\Agent;
+use App\Models\Log;
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     if (isset($_GET['id'])) {
-        $stmt = $pdo->prepare('SELECT * FROM agents WHERE id = ?');
-        $stmt->execute([$_GET['id']]);
-        $agent = $stmt->fetch();
+        $agent = Agent::find($_GET['id']);
         
         if (!$agent) {
             sendJson(['error' => 'Agent not found'], 404);
         }
         
-        sendJson($agent);
+        sendJson($agent->toArray());
     } else {
-        $stmt = $pdo->query('SELECT * FROM agents ORDER BY id');
-        sendJson($stmt->fetchAll());
+        $agents = Agent::orderBy('id')->get();
+        sendJson($agents->toArray());
     }
 }
 
@@ -29,19 +30,20 @@ if (in_array($method, ['POST', 'PUT', 'DELETE']) || isset($_GET['action'])) {
 if ($method === 'POST') {
     if (isset($_GET['action']) && $_GET['action'] === 'execute') {
         $agentId = $_GET['id'];
-        $stmt = $pdo->prepare('SELECT * FROM agents WHERE id = ?');
-        $stmt->execute([$agentId]);
-        $agent = $stmt->fetch();
+        $agent = Agent::find($agentId);
         
         if (!$agent) {
             sendJson(['error' => 'Agent not found'], 404);
         }
         
-        $stmt = $pdo->prepare('UPDATE agents SET status = "running" WHERE id = ?');
-        $stmt->execute([$agentId]);
+        $agent->status = 'running';
+        $agent->save();
         
-        $stmt = $pdo->prepare('INSERT INTO logs (agent_id, level, message) VALUES (?, "info", ?)');
-        $stmt->execute([$agentId, "Agent {$agent['name']} execution started"]);
+        Log::create([
+            'agent_id' => $agentId,
+            'level' => 'info',
+            'message' => "Agent {$agent->name} execution started"
+        ]);
         
         sendJson(['message' => 'Agent execution started', 'agent_id' => $agentId]);
     } else {
@@ -51,14 +53,13 @@ if ($method === 'POST') {
             sendJson(['error' => 'Name is required'], 400);
         }
         
-        $stmt = $pdo->prepare('INSERT INTO agents (name, description, status) VALUES (?, ?, ?)');
-        $stmt->execute([
-            $data['name'],
-            $data['description'] ?? null,
-            $data['status'] ?? 'idle'
+        $agent = Agent::create([
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+            'status' => $data['status'] ?? 'idle'
         ]);
         
-        sendJson(['id' => $pdo->lastInsertId(), 'message' => 'Agent created'], 201);
+        sendJson(['id' => $agent->id, 'message' => 'Agent created'], 201);
     }
 }
 
@@ -66,36 +67,21 @@ if ($method === 'PUT') {
     $data = json_decode(file_get_contents('php://input'), true);
     $agentId = $_GET['id'];
     
-    $stmt = $pdo->prepare('SELECT id FROM agents WHERE id = ?');
-    $stmt->execute([$agentId]);
+    $agent = Agent::find($agentId);
     
-    if (!$stmt->fetch()) {
+    if (!$agent) {
         sendJson(['error' => 'Agent not found'], 404);
     }
     
-    $fields = [];
-    $values = [];
+    if (isset($data['name'])) $agent->name = $data['name'];
+    if (isset($data['description'])) $agent->description = $data['description'];
+    if (isset($data['status'])) $agent->status = $data['status'];
     
-    if (isset($data['name'])) {
-        $fields[] = 'name = ?';
-        $values[] = $data['name'];
-    }
-    if (isset($data['description'])) {
-        $fields[] = 'description = ?';
-        $values[] = $data['description'];
-    }
-    if (isset($data['status'])) {
-        $fields[] = 'status = ?';
-        $values[] = $data['status'];
-    }
-    
-    if (empty($fields)) {
+    if (!$agent->isDirty()) {
         sendJson(['error' => 'No fields to update'], 400);
     }
     
-    $values[] = $agentId;
-    $stmt = $pdo->prepare('UPDATE agents SET ' . implode(', ', $fields) . ' WHERE id = ?');
-    $stmt->execute($values);
+    $agent->save();
     
     sendJson(['message' => 'Agent updated']);
 }
@@ -103,15 +89,13 @@ if ($method === 'PUT') {
 if ($method === 'DELETE') {
     $agentId = $_GET['id'];
     
-    $stmt = $pdo->prepare('SELECT id FROM agents WHERE id = ?');
-    $stmt->execute([$agentId]);
+    $agent = Agent::find($agentId);
     
-    if (!$stmt->fetch()) {
+    if (!$agent) {
         sendJson(['error' => 'Agent not found'], 404);
     }
     
-    $stmt = $pdo->prepare('DELETE FROM agents WHERE id = ?');
-    $stmt->execute([$agentId]);
+    $agent->delete();
     
     sendJson(['message' => 'Agent deleted']);
 }

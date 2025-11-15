@@ -77,14 +77,22 @@ function validateBearerToken() {
         exit;
     }
     
-    $pdo = getDbConnection();
-    $stmt = $pdo->prepare('SELECT id FROM api_tokens WHERE token = ? AND (expires_at IS NULL OR expires_at > NOW())');
-    $stmt->execute([$token]);
-    
-    if (!$stmt->fetch()) {
-        http_response_code(401);
-        echo json_encode(['error' => 'Invalid or expired token']);
-        exit;
+    if (class_exists('App\Models\ApiToken')) {
+        if (!App\Models\ApiToken::validateToken($token)) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid or expired token']);
+            exit;
+        }
+    } else {
+        $pdo = getDbConnection();
+        $stmt = $pdo->prepare('SELECT id FROM api_tokens WHERE token = ? AND (expires_at IS NULL OR expires_at > NOW())');
+        $stmt->execute([$token]);
+        
+        if (!$stmt->fetch()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid or expired token']);
+            exit;
+        }
     }
 }
 

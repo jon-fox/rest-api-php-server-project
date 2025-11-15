@@ -1,12 +1,13 @@
 <?php
 
+require_once 'bootstrap.php';
 require_once 'config.php';
 
-$pdo = getDbConnection();
+use App\Models\Tool;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     sendJson(['error' => 'Method not allowed'], 405);
 }
 
-$stmt = $pdo->query('SELECT * FROM tools ORDER BY category, name');
-sendJson($stmt->fetchAll());
+$tools = Tool::orderBy('category')->orderBy('name')->get();
+sendJson($tools->toArray());

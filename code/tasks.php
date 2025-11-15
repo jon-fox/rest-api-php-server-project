@@ -1,35 +1,32 @@
 <?php
 
+require_once 'bootstrap.php';
 require_once 'config.php';
 
-$pdo = getDbConnection();
+use App\Models\Task;
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     if (isset($_GET['action']) && $_GET['action'] === 'status') {
-        $taskId = $_GET['id'];
-        $stmt = $pdo->prepare('SELECT id, status FROM tasks WHERE id = ?');
-        $stmt->execute([$taskId]);
-        $task = $stmt->fetch();
+        $task = Task::find($_GET['id']);
         
         if (!$task) {
             sendJson(['error' => 'Task not found'], 404);
         }
         
-        sendJson(['task_id' => $task['id'], 'status' => $task['status']]);
+        sendJson(['task_id' => $task->id, 'status' => $task->status]);
     } elseif (isset($_GET['id'])) {
-        $stmt = $pdo->prepare('SELECT * FROM tasks WHERE id = ?');
-        $stmt->execute([$_GET['id']]);
-        $task = $stmt->fetch();
+        $task = Task::find($_GET['id']);
         
         if (!$task) {
             sendJson(['error' => 'Task not found'], 404);
         }
         
-        sendJson($task);
+        sendJson($task->toArray());
     } else {
-        $stmt = $pdo->query('SELECT * FROM tasks ORDER BY priority DESC, id');
-        sendJson($stmt->fetchAll());
+        $tasks = Task::orderByDesc('priority')->orderBy('id')->get();
+        sendJson($tasks->toArray());
     }
 }
 
@@ -45,18 +42,17 @@ if ($method === 'POST') {
     }
     
     try {
-        $stmt = $pdo->prepare('INSERT INTO tasks (agent_id, title, description, status, priority) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([
-            $data['agent_id'] ?? null,
-            $data['title'],
-            $data['description'] ?? null,
-            $data['status'] ?? 'pending',
-            $data['priority'] ?? 0
+        $task = Task::create([
+            'agent_id' => $data['agent_id'] ?? null,
+            'title' => $data['title'],
+            'description' => $data['description'] ?? null,
+            'status' => $data['status'] ?? 'pending',
+            'priority' => $data['priority'] ?? 0
         ]);
         
-        sendJson(['id' => $pdo->lastInsertId(), 'message' => 'Task created'], 201);
-    } catch (PDOException $e) {
-        if ($e->getCode() == 23000) {
+        sendJson(['id' => $task->id, 'message' => 'Task created'], 201);
+    } catch (\Exception $e) {
+        if (strpos($e->getMessage(), 'foreign key') !== false) {
             sendJson(['error' => 'Invalid agent_id: Agent does not exist'], 400);
         }
         sendJson(['error' => 'Failed to create task'], 500);
@@ -65,48 +61,33 @@ if ($method === 'POST') {
 
 if ($method === 'PUT') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $taskId = $_GET['id'];
+    $task = Task::find($_GET['id']);
     
-    $stmt = $pdo->prepare('SELECT id FROM tasks WHERE id = ?');
-    $stmt->execute([$taskId]);
-    
-    if (!$stmt->fetch()) {
+    if (!$task) {
         sendJson(['error' => 'Task not found'], 404);
     }
     
-    $fields = [];
-    $values = [];
-    
     foreach (['agent_id', 'title', 'description', 'status', 'priority'] as $field) {
         if (isset($data[$field])) {
-            $fields[] = "$field = ?";
-            $values[] = $data[$field];
+            $task->$field = $data[$field];
         }
     }
     
-    if (empty($fields)) {
+    if (!$task->isDirty()) {
         sendJson(['error' => 'No fields to update'], 400);
     }
     
-    $values[] = $taskId;
-    $stmt = $pdo->prepare('UPDATE tasks SET ' . implode(', ', $fields) . ' WHERE id = ?');
-    $stmt->execute($values);
-    
+    $task->save();
     sendJson(['message' => 'Task updated']);
 }
 
 if ($method === 'DELETE') {
-    $taskId = $_GET['id'];
+    $task = Task::find($_GET['id']);
     
-    $stmt = $pdo->prepare('SELECT id FROM tasks WHERE id = ?');
-    $stmt->execute([$taskId]);
-    
-    if (!$stmt->fetch()) {
+    if (!$task) {
         sendJson(['error' => 'Task not found'], 404);
     }
     
-    $stmt = $pdo->prepare('DELETE FROM tasks WHERE id = ?');
-    $stmt->execute([$taskId]);
-    
+    $task->delete();
     sendJson(['message' => 'Task deleted']);
 }
