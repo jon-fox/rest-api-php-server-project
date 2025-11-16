@@ -14,16 +14,10 @@ if [ ! -f ".env" ]; then
     if [ -f ".env.example" ]; then
         cp .env.example .env
         echo "Created .env from .env.example"
-    else
-        cat > .env << 'EOF'
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_NAME=agent_management
-DB_USER=root
-DB_PASS=
-EOF
-        echo "Created default .env file"
         echo "  Edit code/.env to set your database credentials"
+    else
+        echo "Error: .env.example not found"
+        exit 1
     fi
 fi
 
@@ -39,23 +33,45 @@ if [ ! -d "vendor" ]; then
 fi
 
 echo ""
-echo "Setting up database..."
-cd database
-if [ -f "setup.sh" ]; then
-    bash setup.sh
+echo "Generating application key..."
+if grep -q "APP_KEY=$" .env || ! grep -q "APP_KEY=" .env; then
+    php artisan key:generate --ansi
+    echo "Application key generated"
 else
-    echo "Warning: database/setup.sh not found, skipping database setup"
+    echo "Application key already set"
 fi
-cd "$CODE_DIR"
 
 echo ""
-echo "Starting PHP development server..."
+echo "Checking database connection..."
+DB_PASSWORD=$(grep "^DB_PASSWORD=" .env | cut -d'=' -f2)
+if [ -z "$DB_PASSWORD" ]; then
+    read -sp "Enter MySQL root password: " DB_PASSWORD
+    echo ""
+    # Update .env with password
+    if grep -q "^DB_PASSWORD=" .env; then
+        sed -i '' "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" .env
+    else
+        echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+    fi
+fi
+
+echo ""
+echo "Running database migrations..."
+php artisan migrate:fresh --force
+echo "Database migrations completed"
+
+echo ""
+echo "Seeding database with sample data..."
+mysql -u root -h 127.0.0.1 agent_management < "$PROJECT_ROOT/code-original/database/seed.sql" 2>/dev/null || echo "Note: Database seeding skipped (manual seed required)"
+
+echo ""
+echo "Starting Laravel development server..."
 echo ""
 echo "Server running at: http://localhost:8000"
+echo "API Base URL: http://localhost:8000/api"
 echo "API Documentation: http://localhost:8000/docs"
-echo "API Tests: http://localhost:8000/tests"
 echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""
 
-php -S localhost:8000
+php artisan serve --host=0.0.0.0 --port=8000

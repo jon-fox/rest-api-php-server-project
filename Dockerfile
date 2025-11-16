@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 WORKDIR /var/www/html
 
@@ -16,8 +16,8 @@ COPY code/ /var/www/html/
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8000
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "/var/www/html"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

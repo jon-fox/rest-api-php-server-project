@@ -21,8 +21,6 @@ services:
       MYSQL_DATABASE: agent_management
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./code/database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
-      - ./code/database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
     healthcheck:
       test: mysqladmin ping -h localhost -psecret
       interval: 3s
