@@ -1,82 +1,70 @@
-Step by Step to Get Started (Assuming all pre reqs are installed and MySQL is available)
+# Laravel REST API - Agent Management System
 
-1. run code/database/setup.sh to setup the agents database and insert preliminary data
+A containerized Laravel REST API for managing AI agents, tasks, tools, and logs.
 
-2. navigate to code/ and run `php -S localhost:8000`
+**Tested on:** macOS
 
-3. Navigate to the `http://localhost:8000/docs` endpoint to view available endpoints. Built to be like swagger api, so we can run sample payloads, comes with sample curls for local.
+## Prerequisites
 
-4. use generate_token.sh to generate an auth token for use with the protected endpoints, it will auto insert the auth token into the database, then include the auth token in the swagger page.
+- Docker or [Colima](https://github.com/abiosoft/colima)
+- Bash shell
 
-5. We should be good to call the agent endpoints
+## Quick Start
 
-NGINX Deployment
------------------------------------
-
-Alternative to PHP built-in server - use NGINX with PHP-FPM:
+### First Time Setup
 
 ```bash
-./deploy/start_nginx.sh    # Start NGINX on port 8000
-./deploy/stop_nginx.sh     # Stop NGINX
+bash run.sh
 ```
 
-Auto-generates config, starts PHP-FPM if needed, and tests deployment.
+This automatically:
+- Starts Docker/Colima if needed
+- Builds and starts containers (MySQL + Laravel)
+- Runs database migrations
+- Seeds sample data (agents, tasks, tools)
+- Generates API authentication token
+- Updates test suite with valid token
 
-Quick local .env (required)
------------------------------------
-Create `code/.env` with these local values so PHP can connect:
-
-```env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_NAME=agent_management
-DB_USER=root
-DB_PASS=123456
-```
-
-Then run:
+### Subsequent Runs
 
 ```bash
-./deploy/start_nginx.sh
+bash run.sh
 ```
 
-Testing
--------
+Detects existing setup and displays connection info. Re-runs seeding and token generation only if needed.
 
-### Automated Test Suite
+### Manual Setup
 
-Two test methods are available to validate all 14 API endpoints:
-
-**1. Shell Script (Command Line):**
+If you need to rebuild from scratch:
 
 ```bash
-cd code
-./tests/test_api.sh
+bash setup.sh
 ```
-- Bash script using cURL
-- Runs sequentially through all endpoints
-- Shows pass/fail status with HTTP codes
-- Creates/cleans up test data automatically
-- Outputs results to terminal
-- No server required (uses localhost:8000)
 
-**2. HTML/JavaScript (Browser):**
+## API Endpoints
 
-From the `code/` directory, open the test file in your browser:
+- **API Base:** http://localhost:8000/api
+- **Documentation:** http://localhost:8000/docs
+- **Test Suite:** http://localhost:8000/tests
+
+## Management
+
+**Stop containers:**
 ```bash
-open tests/test.html          # macOS
-xdg-open tests/test.html      # Linux
+docker compose down
 ```
-```cmd
-start tests\test.html         # Windows (Command Prompt)
-```
-```powershell
-Invoke-Item tests\test.html   # Windows (PowerShell)
-```
-Or manually open the file `code/tests/test.html` in any browser
 
-- Interactive UI in browser
-- Click "Run All Tests" button to execute
-- Real-time test execution with visual feedback
-- Detailed request/response display
-- Summary statistics with timing
+**Reset everything:**
+```bash
+docker compose down -v
+bash run.sh
+```
+
+## API Resources
+
+- **Agents:** CRUD operations for AI agents
+- **Tasks:** Task management with status tracking
+- **Tools:** Available tools listing
+- **Logs:** Activity logs
+
+Authentication required for POST/PUT/DELETE operations using Bearer token.

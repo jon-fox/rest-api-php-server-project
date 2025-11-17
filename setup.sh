@@ -35,11 +35,26 @@ docker compose exec app php artisan key:generate --force
 echo "Running database migrations..."
 docker compose exec app php artisan migrate:fresh --force
 
+echo "Seeding database with sample data..."
+docker compose exec app php artisan db:seed --force
+
+echo "Generating API token for tests..."
+API_TOKEN=$(docker compose exec app php artisan tinker --execute="
+\$user = \App\Models\User::first();
+if (!\$user) {
+    \$user = \App\Models\User::factory()->create(['name' => 'Test User', 'email' => 'test@example.com']);
+}
+\$user->tokens()->delete();
+echo \$user->createToken('test-token')->plainTextToken;
+" | tr -d '\r')
+
 echo ""
-echo "✅ Setup completed successfully!"
+echo "Setup completed successfully!"
 echo "API running at http://localhost:8000"
 echo "  Docs: http://localhost:8000/docs"
 echo "  API base: http://localhost:8000/api"
+echo ""
+echo "API Token: $API_TOKEN"
 echo ""
 echo "To stop: docker compose down"
 echo ""
