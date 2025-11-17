@@ -114,7 +114,7 @@ The professor will regrade to add or subtract points.
   - [T] Script successfully deploys Laravel application
 - [5/5] Created a screen capture to show the script can start the Laravel REST API project
   - GitHub Link or Filename of the screen capture: 
-      code/screenshots/cli_laravel_start.png
+      screenshots/cli_laravel_start.png
   - [T] Screen capture included
 
 ---
@@ -148,8 +148,8 @@ A: You should prove that your code (or script) works by screen capture your outp
   - [T] Script successfully builds and runs Docker containers
 - [5/5] Created a screen capture to show the script can setup and run Docker
   - GitHub Link or Filename of the screen capture: 
-      code/screenshots/docker_build.png
-      code/screenshots/docker_ps.png
+      screenshots/docker_build.png
+      screenshots/docker_ps.png
   - [T] Screen capture included
 
 ---
@@ -182,7 +182,7 @@ A: You should prove that your code (or script) works by screen capture your outp
   - [T] Portfolio showcases CSC 640 project effectively
 - [5/5] Created a screen capture to show you can use Hugo to build web site for your portfolio
   - GitHub Link or Filename of the screen capture: 
-      code/screenshots/github_io_docs.png
+      screenshots/github_io_docs.png
   - [T] Screen capture included
 
 ---
@@ -219,7 +219,7 @@ A2: As a starter, you can add your CSC 640 projects (PHP/Laravel REST API implem
   - [T] GitHub Actions successfully builds and deploys
 - [5/5] Created a screen capture to show you can run GitHub.io to deploy Hugo project
   - GitHub Link or Filename of the screen capture: 
-      code/screenshots/github_io_actions.png
+      screenshots/github_io_actions.png
   - [T] Screen capture included
 
 ---
